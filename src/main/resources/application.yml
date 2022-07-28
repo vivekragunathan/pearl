@@ -1,0 +1,18 @@
+server.port: 8421
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    retry:
+      topic:
+        enabled: true
+        attempts: 3
+        delay: 3000 # milliseconds
+    consumer:
+      group-id: pearl-spring
+      auto-offset-reset: latest
+app:
+  magic-number: 22
+  users:
+    topic: pearl.users
+    group-id: pearl.users.default
