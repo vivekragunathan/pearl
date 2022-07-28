@@ -1,7 +1,10 @@
-# Compiled class file
-*.class
+.idea
+.gradle
+build
+logs
+tmp
 
-# Log file
+*.class
 *.log
 
 # BlueJ files
