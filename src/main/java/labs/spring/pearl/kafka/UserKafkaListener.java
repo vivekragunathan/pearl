@@ -20,7 +20,7 @@ public class UserKafkaListener {
 
   private static final Logger logger = LoggerFactory.getLogger(UserKafkaListener.class);
 
-  @KafkaListener(topics = "${app.users.topic}")
+  @KafkaListener(topics = "${app.users.topic}", containerFactory = "listenerContainerFactory")
   public void listenHeartRate(ConsumerRecord<String, String> record) {
     try {
       logger.info("Received user record in Kafka: ({})", record.key());
