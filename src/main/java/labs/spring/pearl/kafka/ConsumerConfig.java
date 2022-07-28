@@ -9,6 +9,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.util.backoff.FixedBackOff;
@@ -62,6 +63,8 @@ public class ConsumerConfig {
       .fixedBackOff(backoff.getInterval())
       .maxAttempts(Math.toIntExact(backoff.getMaxAttempts()))
       .useSingleTopicForFixedDelays()
+      .retryTopicSuffix(".retry")
+      .dltSuffix(".dlt")
       .doNotRetryOnDltFailure()
       .listenerFactory(factory)
       .create(template);
