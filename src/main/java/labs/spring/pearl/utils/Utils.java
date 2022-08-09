@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import labs.spring.pearl.models.User;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,11 +34,11 @@ public class Utils {
       .collect(Collectors.joining());
   }
 
-  public static User sampleUser() {
+  public static User sampleUser(int ageOverride) {
     return new User(
       UUID.randomUUID().toString(),
       randomString(10, alphaChars),
-      random.nextInt(20, 100)
+      ageOverride > 0 ? ageOverride : random.nextInt(20, 100)
     );
   }
 }

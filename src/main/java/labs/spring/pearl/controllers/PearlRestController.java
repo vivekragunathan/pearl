@@ -1,16 +1,21 @@
 package labs.spring.pearl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import labs.spring.pearl.models.AppConfig;
+import labs.spring.pearl.models.OrdersConfig;
 import labs.spring.pearl.models.User;
-import labs.spring.pearl.models.UserKafkaConfig;
+import labs.spring.pearl.models.UsersConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static labs.spring.pearl.utils.Utils.*;
@@ -21,14 +26,15 @@ public class PearlRestController {
   private static final Logger logger = LoggerFactory.getLogger(PearlRestController.class);
 
   private final KafkaTemplate<String, String> kafkaTemplate;
-  private final UserKafkaConfig               config;
+  private final AppConfig                     config;
+  private final UsersConfig                   usersCfg;
+  private final OrdersConfig                  ordersCfg;
 
-  public PearlRestController(
-    KafkaTemplate<String, String> kafkaTemplate,
-    UserKafkaConfig config
-  ) {
+  public PearlRestController(KafkaTemplate<String, String> kafkaTemplate, AppConfig config) {
     this.kafkaTemplate = kafkaTemplate;
     this.config = config;
+    this.usersCfg = config.users();
+    this.ordersCfg = config.orders();
   }
 
   @GetMapping("/")
@@ -36,12 +42,20 @@ public class PearlRestController {
     return "Hello Spring Boot!";
   }
 
+  @GetMapping("/configs")
+  public List<Object> configs() {
+    return Arrays.asList(usersCfg, ordersCfg, config);
+  }
+
   @GetMapping("/users/kafka")
-  public User publishSampleUserToKafka() throws JsonProcessingException {
-    var user = sampleUser();
+  public User publishSampleUserToKafka(
+    @RequestHeader(value = "age", required = false, defaultValue = "0")
+    int ageOverride
+  ) throws JsonProcessingException {
+    var user = sampleUser(ageOverride);
 
     kafkaTemplate
-      .send(config.topic(), user.id(), toJson(user))
+      .send(usersCfg.kafka().topic(), user.id(), toJson(user))
       .addCallback(
         this::whenPublishedToKafkaSuccessful,
         this::whenPublishToKafkaFailed
@@ -54,7 +68,7 @@ public class PearlRestController {
 
   private void whenPublishToKafkaFailed(Throwable ex) {
     if (ex instanceof KafkaProducerException ke) {
-      final var user  = ke.getFailedProducerRecord().value();
+      final var user = ke.getFailedProducerRecord().value();
       logger.info(s("Failed to publish to Kafka: {0}", user), ex);
     } else {
       logger.info("Encountered unknown error when publishing to Kafka", ex);
