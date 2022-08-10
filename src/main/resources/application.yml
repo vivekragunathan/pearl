@@ -15,4 +15,6 @@ app:
   magic-number: 22
   users:
     topic: pearl.users
+    retry-topic: pearl.extras.users.retry
+    dead-letter-topic: pearl.extras.users.deadLetter
     group-id: pearl.users.default

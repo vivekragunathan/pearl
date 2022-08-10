@@ -20,7 +20,10 @@ public class UserKafkaListener {
 
   private static final Logger logger = LoggerFactory.getLogger(UserKafkaListener.class);
 
-  @KafkaListener(topics = "${app.users.topic}", containerFactory = "listenerContainerFactory")
+  @KafkaListener(
+    topics = "${app.users.topic}",
+    containerFactory = "listenerContainerFactory"
+  )
   public void listenHeartRate(ConsumerRecord<String, String> record) {
     try {
       logger.info("Received user record in Kafka: ({})", record.key());
@@ -34,8 +37,9 @@ public class UserKafkaListener {
     logger.info("Processing user({}): {} ...", key, user);
 
     if (user.age() >= 40) {
-      final var msg = s("Encountered error processing user record {0}", key);
-      throw new RuntimeException(msg);
+      throw new RuntimeException(
+        s("Encountered error processing user record {0}", key)
+      );
     }
   }
 }

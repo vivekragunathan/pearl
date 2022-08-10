@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,15 +18,25 @@ public class Utils {
   private static final Random random     = new Random(32767);
   private static final String alphaChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+  public static void println(String spec, Object... args) {
+    System.out.println(s(spec, args));
+  }
+
+  public static String s(String spec, Object... args) {
+    return MessageFormat.format(spec, args);
+  }
+
+  public static <T> void runIf(T input, Predicate<T> pred, Consumer<T> fn) {
+    if (pred.test(input)) {
+      fn.accept(input);
+    }
+  }
+
   public static <T> String toJson(T obj) throws JsonProcessingException {
     return new ObjectMapper()
       .writer()
       .withDefaultPrettyPrinter()
       .writeValueAsString(obj);
-  }
-
-  public static String s(String spec, Object... args) {
-    return MessageFormat.format(spec, args);
   }
 
   public static String randomString(int len, String chars) {
