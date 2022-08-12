@@ -7,12 +7,23 @@ spring:
       topic:
         enabled: true
         attempts: 3
-        delay: 3000 # milliseconds
+        delay: 2000 # milliseconds
     consumer:
       group-id: pearl-spring
       auto-offset-reset: latest
 app:
   magic-number: 22
   users:
-    topic: pearl.users
-    group-id: pearl.users.default
+    spring: boot
+    kafka:
+      group-id: ${spring.kafka.consumer.group-id}
+      topic: pearl.users
+      retry-topic: pearl.hidden.users.retry.${app.magic-number}
+      dead-letter-topic: pearl.hidden.users.deadLetter.${app.magic-number}
+  orders:
+    hello: world
+    kafka:
+      group-id: ${spring.kafka.consumer.group-id}
+      topic: pearl.orders
+      retry-topic: pearl.orders.hidden.retry.${app.magic-number}
+      dead-letter-topic: pearl.orders.hidden.deadLetter.${app.magic-number}
