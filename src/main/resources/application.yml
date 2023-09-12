@@ -25,5 +25,5 @@ app:
     kafka:
       group-id: ${spring.kafka.consumer.group-id}
       topic: pearl.orders
-      retry-topic: pearl.orders.hidden.retry.${app.magic-number}
-      dead-letter-topic: pearl.orders.hidden.deadLetter.${app.magic-number}
+      retry-topic: pearl.hidden.orders.retry.${app.magic-number}
+      dead-letter-topic: pearl.hidden.orders.deadLetter.${app.magic-number}
